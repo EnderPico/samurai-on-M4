@@ -1,6 +1,6 @@
 <div align="center">
 
-# Modfied version of SAMURAI made to run on Mac machines of the M series
+# Modified version of SAMURAI made to run on Mac machines of the M series
 
 [Cheng-Yen Yang](https://yangchris11.github.io), [Hsiang-Wei Huang](https://hsiangwei0903.github.io/), [Wenhao Chai](https://rese1f.github.io/), [Zhongyu Jiang](https://zhyjiang.github.io/#/), [Jenq-Neng Hwang](https://people.ece.uw.edu/hwang/)
 
