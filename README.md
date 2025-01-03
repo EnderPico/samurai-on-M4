@@ -65,7 +65,7 @@ python scripts/main_inference.py
 
 To run the demo with your custom video or frame directory, use the following examples:
 
-**Note:** The `.txt` file contains a single line with the bounding box of the first frame in `x,y,w,h` format while the SAM 2 takes `x1,y1,x2,y2` format as bbox input.
+**Note:** The `.txt` file contains a single line with the bounding box of the first frame in `x,y,w,h` format while the SAM 2 takes `x1,y1,x2,y2` format as bbox input. If using a video file, you can use the cords-box-finder.py script to create the nedded text file with the cords alredy on it.
 
 ### Input is Video File
 
