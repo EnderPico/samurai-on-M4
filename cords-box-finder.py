@@ -37,6 +37,12 @@ def draw_rectangle(event, x, y, flags, param):
         cv2.rectangle(frame, top_left, bottom_right, (0, 255, 0), 2)
         print(f"Bounding Box: {top_left}, {bottom_right}")
         cv2.imshow("Draw Bounding Box", frame)
+        save_bounding_box(top_left, bottom_right)
+
+def save_bounding_box(top_left, bottom_right):
+    with open("bounding_box.txt", "w") as file:
+        file.write(f"{top_left[0]},{top_left[1]},{bottom_right[0]},{bottom_right[1]}\n")
+    print(f"Bounding box coordinates saved to bounding_box.txt: {top_left[0]},{top_left[1]},{bottom_right[0]},{bottom_right[1]}")
 
 # File path to the video
 video_path = input("Enter the path to your video file: ")
