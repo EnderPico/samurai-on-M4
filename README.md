@@ -22,7 +22,7 @@ Please see [INSTALL.md](https://github.com/facebookresearch/sam2/blob/main/INSTA
 
 Install other requirements:
 ```
-pip install matplotlib==3.7 tikzplotlib jpeg4py opencv-python lmdb pandas scipy loguru
+pip install matplotlib tikzplotlib jpeg4py opencv-python lmdb pandas scipy loguru
 ```
 
 #### SAM 2.1 Checkpoint Download
