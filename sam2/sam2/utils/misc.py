@@ -176,7 +176,7 @@ def load_video_frames(
     img_mean=(0.485, 0.456, 0.406),
     img_std=(0.229, 0.224, 0.225),
     async_loading_frames=False,
-    compute_device=torch.device("cuda"),
+    compute_device=torch.device("mps"),
 ):
     """
     Load the video frames from video_path. The frames are resized to image_size as in
@@ -217,7 +217,7 @@ def load_video_frames_from_jpg_images(
     img_mean=(0.485, 0.456, 0.406),
     img_std=(0.229, 0.224, 0.225),
     async_loading_frames=False,
-    compute_device=torch.device("cuda"),
+    compute_device=torch.device("mps"),
 ):
     """
     Load the video frames from a directory of JPEG files ("<frame_index>.jpg" format).
@@ -276,16 +276,15 @@ def load_video_frames_from_jpg_images(
     images /= img_std
     return images, video_height, video_width
 
-
+""" Load the video frames from a video file.
 def load_video_frames_from_video_file(
     video_path,
     image_size,
     offload_video_to_cpu,
     img_mean=(0.485, 0.456, 0.406),
     img_std=(0.229, 0.224, 0.225),
-    compute_device=torch.device("cuda"),
+    compute_device=torch.device("mps"),
 ):
-    """Load the video frames from a video file."""
     import decord
 
     img_mean = torch.tensor(img_mean, dtype=torch.float32)[:, None, None]
@@ -304,6 +303,51 @@ def load_video_frames_from_video_file(
         img_mean = img_mean.to(compute_device)
         img_std = img_std.to(compute_device)
     # normalize by mean and std
+    images -= img_mean
+    images /= img_std
+    return images, video_height, video_width
+"""
+def load_video_frames_from_video_file(
+    video_path,
+    image_size,
+    offload_video_to_cpu,
+    img_mean=(0.485, 0.456, 0.406),
+    img_std=(0.229, 0.224, 0.225),
+    compute_device=torch.device("mps"),
+):
+    """Load the video frames from a video file using OpenCV."""
+    import cv2
+    # Convert mean and std to tensors
+    img_mean = torch.tensor(img_mean, dtype=torch.float32)[:, None, None]
+    img_std = torch.tensor(img_std, dtype=torch.float32)[:, None, None]
+    # Open the video file
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        raise ValueError(f"Cannot open video file: {video_path}")
+    # Get original video dimensions
+    video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    images = []
+    # Read frames from the video
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        # Resize frame to the target image size
+        frame = cv2.resize(frame, (image_size, image_size), interpolation=cv2.INTER_AREA)
+        # Convert BGR to RGB
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # Convert to tensor and permute to (C, H, W)
+        frame_tensor = torch.tensor(frame, dtype=torch.float32).permute(2, 0, 1)
+        images.append(frame_tensor)
+    cap.release()
+    # Stack all frames into a 4D tensor (N, C, H, W) and normalize
+    images = torch.stack(images, dim=0) / 255.0
+    if not offload_video_to_cpu:
+        images = images.to(compute_device)
+        img_mean = img_mean.to(compute_device)
+        img_std = img_std.to(compute_device)
+    # Normalize by mean and std
     images -= img_mean
     images /= img_std
     return images, video_height, video_width
