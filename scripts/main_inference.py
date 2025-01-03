@@ -64,7 +64,7 @@ for vid, video in enumerate(test_videos):
 
     height, width = cv2.imread(osp.join(frame_folder, "00000001.jpg")).shape[:2]
 
-    predictor = build_sam2_video_predictor(model_cfg, checkpoint, device="cuda:0")
+    predictor = build_sam2_video_predictor(model_cfg, checkpoint, device="mps")
 
     predictions = []
 
@@ -73,7 +73,7 @@ for vid, video in enumerate(test_videos):
         out = cv2.VideoWriter(osp.join(vis_folder, f'{video_basename}.mp4'), fourcc, 30, (width, height))
 
     # Start processing frames
-    with torch.inference_mode(), torch.autocast("cuda", dtype=torch.float16):
+    with torch.inference_mode(), torch.autocast("mps", dtype=torch.float16):
         state = predictor.init_state(frame_folder, offload_video_to_cpu=True, offload_state_to_cpu=True, async_loading_frames=True)
 
         prompts = load_lasot_gt(osp.join(video_folder, cat_name, video.strip(), "groundtruth.txt"))
@@ -132,4 +132,4 @@ for vid, video in enumerate(test_videos):
     del state
     gc.collect()
     torch.clear_autocast_cache()
-    torch.cuda.empty_cache()
+#    torch.cuda.empty_cache()
